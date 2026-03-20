@@ -60,51 +60,63 @@ function PPAModule() {
           (1 - Math.pow(1 + inputs.interestRate / 100, -inputs.projectLife))
         : 0;
 
-    ```
-var lcoe = calcLCOE(inputs, rate);
+    var lcoe = calcLCOE(inputs, rate);
 
-function npvAtTariff(tariff) {
-  var cfs = [-equity];
-  for (var y = 1; y <= inputs.projectLife; y++) {
-    var energy = annualEnergy * Math.pow(1 - inputs.degradation / 100, y - 1);
-    var revenue = energy * tariff;
-    var opex = inputs.capacityMW * inputs.opexPerMW * rate;
-    var ebitda = revenue - opex;
-    var tax = Math.max(0, ebitda * (inputs.taxRate / 100));
-    var fcfe = ebitda - tax - annualDebtService;
-    cfs.push(fcfe);
-  }
-  return calcNPV(inputs.targetIRR / 100, cfs);
-}
-
-var lo = 0, hi = lcoe * 5, mid = 0;
-for (var i = 0; i < 100; i++) {
-  mid = (lo + hi) / 2;
-  if (npvAtTariff(mid) > 0) hi = mid; else lo = mid;
-}
-var minTariff = mid;
-
-var sensitivity = [10, 12, 14, 16, 18].map(function(irr) {
-  var lo2 = 0, hi2 = lcoe * 5, mid2 = 0;
-  for (var j = 0; j < 100; j++) {
-    mid2 = (lo2 + hi2) / 2;
-    var cfs2 = [-equity];
-    for (var y = 1; y <= inputs.projectLife; y++) {
-      var energy = annualEnergy * Math.pow(1 - inputs.degradation / 100, y - 1);
-      var revenue = energy * mid2;
-      var opex = inputs.capacityMW * inputs.opexPerMW * rate;
-      var ebitda = revenue - opex;
-      var tax = Math.max(0, ebitda * (inputs.taxRate / 100));
-      var fcfe = ebitda - tax - annualDebtService;
-      cfs2.push(fcfe);
+    function npvAtTariff(tariff) {
+      var cfs = [-equity];
+      for (var y = 1; y <= inputs.projectLife; y++) {
+        var energy =
+          annualEnergy * Math.pow(1 - inputs.degradation / 100, y - 1);
+        var revenue = energy * tariff;
+        var opex = inputs.capacityMW * inputs.opexPerMW * rate;
+        var ebitda = revenue - opex;
+        var tax = Math.max(0, ebitda * (inputs.taxRate / 100));
+        var fcfe = ebitda - tax - annualDebtService;
+        cfs.push(fcfe);
+      }
+      return calcNPV(inputs.targetIRR / 100, cfs);
     }
-    if (calcNPV(irr / 100, cfs2) > 0) hi2 = mid2; else lo2 = mid2;
-  }
-  return { irr: irr, tariff: mid2 };
-});
 
-setResults({ lcoe: lcoe, minTariff: minTariff, annualEnergy: annualEnergy, capex: capex, sensitivity: sensitivity });
-```;
+    var lo = 0,
+      hi = lcoe * 5,
+      mid = 0;
+    for (var i = 0; i < 100; i++) {
+      mid = (lo + hi) / 2;
+      if (npvAtTariff(mid) > 0) hi = mid;
+      else lo = mid;
+    }
+    var minTariff = mid;
+
+    var sensitivity = [10, 12, 14, 16, 18].map(function (irr) {
+      var lo2 = 0,
+        hi2 = lcoe * 5,
+        mid2 = 0;
+      for (var j = 0; j < 100; j++) {
+        mid2 = (lo2 + hi2) / 2;
+        var cfs2 = [-equity];
+        for (var y = 1; y <= inputs.projectLife; y++) {
+          var energy =
+            annualEnergy * Math.pow(1 - inputs.degradation / 100, y - 1);
+          var revenue = energy * mid2;
+          var opex = inputs.capacityMW * inputs.opexPerMW * rate;
+          var ebitda = revenue - opex;
+          var tax = Math.max(0, ebitda * (inputs.taxRate / 100));
+          var fcfe = ebitda - tax - annualDebtService;
+          cfs2.push(fcfe);
+        }
+        if (calcNPV(irr / 100, cfs2) > 0) hi2 = mid2;
+        else lo2 = mid2;
+      }
+      return { irr: irr, tariff: mid2 };
+    });
+
+    setResults({
+      lcoe: lcoe,
+      minTariff: minTariff,
+      annualEnergy: annualEnergy,
+      capex: capex,
+      sensitivity: sensitivity,
+    });
   }
 
   var fmtTariff = function (v) {
@@ -147,7 +159,7 @@ setResults({ lcoe: lcoe, minTariff: minTariff, annualEnergy: annualEnergy, capex
         to meet a target IRR. Outputs LCOE and a sensitivity table across return
         thresholds.
       </p>
-      ```
+
       <div style={styles.card}>
         <div style={styles.cardTitle}>Project Parameters</div>
         <div style={styles.grid3}>

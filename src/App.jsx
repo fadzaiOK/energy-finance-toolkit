@@ -40,7 +40,7 @@ export default function App() {
           v1.0
         </div>
       </header>
-      ```
+
       <nav style={styles.nav}>
         {TABS.map(function (tab) {
           return (

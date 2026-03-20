@@ -187,7 +187,7 @@ function ProjectFinanceModule() {
         project parameters to calculate IRR, NPV, Debt Service Coverage Ratio,
         and equity payback period.
       </p>
-      ```
+
       <div style={styles.card}>
         <div style={styles.cardTitle}>Capital Structure</div>
         <div style={styles.grid3}>

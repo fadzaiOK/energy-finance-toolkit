@@ -175,7 +175,7 @@ function TransitionModule() {
         Translate city-scale renewable energy targets into capital requirements,
         financing gaps, green bond sizing, and ratepayer cost impact.
       </p>
-      ```
+
       <div style={styles.card}>
         <div style={styles.cardTitle}>Technology Targets</div>
         {targets.map(function (t, i) {
